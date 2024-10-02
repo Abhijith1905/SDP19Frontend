@@ -15,7 +15,6 @@ const Login = () => {
     password: "",
   });
   const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
   const navigate = useNavigate(); // Initialize the navigation hook
 
   const handleFacultySignInClick = () => {
@@ -37,22 +36,11 @@ const Login = () => {
 
   const handleStudentLoginSubmit = (e) => {
     e.preventDefault();
-
+    
     const { email, username, password } = studentFormData;
 
-    // Hardcoded credentials for the student
-    const validStudentCredentials = {
-      email: "student@gmail.com",
-      username: "student",
-      password: "student",
-    };
-
-    // Check if the input values match the hardcoded student credentials
-    if (
-      email === validStudentCredentials.email &&
-      username === validStudentCredentials.username &&
-      password === validStudentCredentials.password
-    ) {
+    // Check if any input is not empty for student login
+    if (email && username && password) {
       const studentData = {
         email: email,
         username: username,
@@ -62,8 +50,7 @@ const Login = () => {
       localStorage.setItem("student", JSON.stringify(studentData));
       navigate("/studenthome");
     } else {
-      setMessage("Login Failed: Invalid student credentials");
-      setError("");
+      setMessage("Login Failed: Please fill in all fields for Student Login");
     }
   };
 
@@ -72,19 +59,8 @@ const Login = () => {
 
     const { email, username, password } = facultyFormData;
 
-    // Hardcoded credentials for the faculty
-    const validFacultyCredentials = {
-      email: "admin@gmail.com",
-      username: "admin",
-      password: "admin",
-    };
-
-    // Check if the input values match the hardcoded faculty credentials
-    if (
-      email === validFacultyCredentials.email &&
-      username === validFacultyCredentials.username &&
-      password === validFacultyCredentials.password
-    ) {
+    // Check if any input is not empty for faculty login
+    if (email && username && password) {
       const facultyData = {
         email: email,
         username: username,
@@ -94,8 +70,7 @@ const Login = () => {
       localStorage.setItem("faculty", JSON.stringify(facultyData));
       navigate("/facultyhome");
     } else {
-      setMessage("Login Failed: Invalid faculty credentials");
-      setError("");
+      setMessage("Login Failed: Please fill in all fields for Faculty Login");
     }
   };
 
@@ -162,7 +137,7 @@ const Login = () => {
               value={studentFormData.password}
               onChange={(e) => handleInputChange(e, "student")}
             />
-          <span>Forgot your password?</span>
+            <span>Forgot your password?</span>
             <button type="submit">Login</button>
           </form>
         </div>
@@ -194,7 +169,6 @@ const Login = () => {
         </div>
       </div>
       {message && <div style={{ color: "red" }}>{message}</div>}
-      {error && <div style={{ color: "red" }}>{error}</div>}
     </div>
   );
 };
