@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const UploadProjectFurther = () => {
@@ -11,20 +11,8 @@ const UploadProjectFurther = () => {
     window.location.reload();
   };
 
-  const [projectImages, setProjectImages] = useState(null);
-  const [descriptionPDF, setDescriptionPDF] = useState(null);
-  const [workingVideo, setWorkingVideo] = useState(null);
 
-  const handleFileChange = (e, setFile) => {
-    setFile(e.target.files[0]);
-  };
 
-  const handleUpload = (e) => {
-    e.preventDefault();
-    console.log("Project Images:", projectImages);
-    console.log("Description PDF:", descriptionPDF);
-    console.log("Working Video:", workingVideo);
-  };
 
   const styles = {
     page: {
@@ -120,21 +108,18 @@ const UploadProjectFurther = () => {
             <label>Upload Project images</label>
             <input
               type="file"
-              onChange={(e) => handleFileChange(e, setProjectImages)}
             />
           </div>
           <div style={styles.uploadBox}>
             <label>Upload Description PDF</label>
             <input
               type="file"
-              onChange={(e) => handleFileChange(e, setDescriptionPDF)}
             />
           </div>
           <div style={styles.uploadBox}>
             <label>Upload Working Video</label>
             <input
               type="file"
-              onChange={(e) => handleFileChange(e, setWorkingVideo)}
             />
           </div>
           <div style={styles.cloudUpload}>

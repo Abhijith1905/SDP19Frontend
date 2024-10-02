@@ -12,7 +12,7 @@ const CreatePage = () => {
   };
 
   const [projectFiles, setProjectFiles] = useState(null);
-  const [additionalInfo, setAdditionalInfo] = useState(null);
+
 
   const handleFileChange = (e, setFile) => {
     setFile(e.target.files[0]);
@@ -21,7 +21,6 @@ const CreatePage = () => {
   const handleUpload = (e) => {
     e.preventDefault();
     console.log("Project Files:", projectFiles);
-    console.log("Additional Info:", additionalInfo);
   };
 
   return (
