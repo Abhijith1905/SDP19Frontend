@@ -162,7 +162,7 @@ const Login = () => {
               value={studentFormData.password}
               onChange={(e) => handleInputChange(e, "student")}
             />
-            <a href="#">Forgot your password?</a>
+          <span>Forgot your password?</span>
             <button type="submit">Login</button>
           </form>
         </div>
