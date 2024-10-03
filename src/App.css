@@ -159,3 +159,13 @@ section {
 h2, p {
   margin: 0; /* Ensure no extra margins are added around text */
 }
+
+.footer {
+  text-align: center;
+  padding: 10px 0;
+  background-color: #f1f1f1;
+  color: #333;
+  font-size: 14px;
+  margin-top: 20px;
+}
+

@@ -36,7 +36,7 @@ const Login = () => {
 
   const handleStudentLoginSubmit = (e) => {
     e.preventDefault();
-    
+
     const { email, username, password } = studentFormData;
 
     // Check if any input is not empty for student login
@@ -87,7 +87,7 @@ const Login = () => {
       >
         <div className="form-container sign-up-container">
           <form onSubmit={handleFacultyLoginSubmit}>
-            <h2>Faculty Login</h2>
+          <h2 style={{ color: "rgb(35, 74, 121)" }}>Faculty Login</h2>
             <input
               type="text"
               name="username"
@@ -115,7 +115,9 @@ const Login = () => {
         </div>
         <div className="form-container sign-in-container">
           <form onSubmit={handleStudentLoginSubmit}>
-            <h2>Student Login</h2>
+          <h2 style={{ color: "rgb(35, 74, 121)" }}>Student Login</h2>
+
+
             <input
               type="text"
               name="username"

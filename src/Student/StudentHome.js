@@ -1,5 +1,5 @@
 import React from "react";
-import { Link,  useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./studentnavbar.css";
 
 export default function StudentHome() {
@@ -14,6 +14,7 @@ export default function StudentHome() {
 
   return (
     <div>
+      {/* Navbar */}
       <nav>
         <div className="navbar">
           <h3 style={{ fontSize: "20pt", color: "White", marginLeft: 0 }}>
@@ -52,6 +53,7 @@ export default function StudentHome() {
         </div>
       </nav>
 
+      {/* Content */}
       <div className="content-container">
         <div className="text-content">
           <h2>A GOAL</h2>
@@ -71,6 +73,18 @@ export default function StudentHome() {
         </div>
         <img src="now.png" alt="Illustration" className="illustration1" />
       </div>
+
+      {/* Footer */}
+      <footer className="footer">
+        <div className="footer-content">
+          <span>© 2024 EduSupport. All rights reserved.</span>
+          <div className="footer-links">
+            <span className="footer-link">Privacy Policy</span>
+            <span className="footer-link">Terms of Service</span>
+            <span className="footer-link">Contact Us</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

@@ -150,8 +150,10 @@ const PortfolioCheck2 = () => {
         </div>
       </nav>
       <div className="portfolio" style={styles.portfolio}>
-        <img src="prototype2.png" alt="Avatar" style={styles.avatar} />
-        <Link to="/review" style={styles.button}>Grade</Link>
+        <img src="image.png" alt="Avatar" style={styles.avatar} />
+        <Link to="/review" style={styles.button}>
+          Grade
+        </Link>
       </div>
     </div>
   );

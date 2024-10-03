@@ -67,7 +67,16 @@ export default function FacultyHome() {
         </div>
         <img src="now.png" alt="Illustration" className="illustration1" />
       </div>
-    
+      <footer className="footer">
+        <div className="footer-content">
+          <span>© 2024 EduSupport. All rights reserved.</span>
+          <div className="footer-links">
+            <span className="footer-link">Privacy Policy</span>
+            <span className="footer-link">Terms of Service</span>
+            <span className="footer-link">Contact Us</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
