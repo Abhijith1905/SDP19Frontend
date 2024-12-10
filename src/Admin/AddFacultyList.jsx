@@ -100,12 +100,13 @@ export default function AddFacultyList() {
     formData.append("file", file);
 
     try {
+      setMessage("Faculty added successfully!");
       await axios.post(`${config.url}/addfacultylist`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      setMessage("Faculty added successfully!");
+      
     } catch (error) {
       setMessage(error.response?.data?.message || error.message);
     }
