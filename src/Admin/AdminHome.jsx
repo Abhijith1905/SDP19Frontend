@@ -107,25 +107,26 @@ export default function AdminHome() {
   };
 
   useEffect(() => {
-    const fetchCounts = async () => {
-      try {
-        const [studentsRes, facultyRes, projectsRes] = await Promise.all([
-          axios.get(`${config.url}/studentcount`),
-          axios.get(`${config.url}/facultycount`),
-          axios.get(`${config.url}/projectcount`),
-        ]);
+   const fetchCounts = async () => {
+  try {
+    const [studentsRes, facultyRes, projectsRes] = await Promise.all([
+      axios.get(`${config.url}/studentcount`),
+      axios.get(`${config.url}/facultycount`),
+      axios.get(`${config.url}/projectcount`),
+    ]);
 
-        setCounts({
-          students: studentsRes.data,
-          faculty: facultyRes.data,
-          projects: projectsRes.data,
-        });
-        setLoading(false);
-      } catch (err) {
-        setError("Failed to fetch data");
-        setLoading(false);
-      }
-    };
+    setCounts({
+      students: studentsRes.data,
+      faculty: facultyRes.data,
+      projects: projectsRes.data,
+    });
+    setLoading(false);
+  } catch (err) {
+    console.error("Error fetching data:", err); // Log error details
+    setError("Failed to fetch data");
+    setLoading(false);
+  }
+};
 
     fetchCounts();
   }, []);
