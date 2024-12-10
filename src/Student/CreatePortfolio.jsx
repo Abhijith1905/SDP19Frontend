@@ -249,6 +249,54 @@ export default function CreatePortfolio() {
     cursor: "pointer",
   };
 
+    const styles = {
+    container: {
+      maxWidth: "800px",
+      margin: "0 auto",
+      padding: "2rem",
+      backgroundColor: "#ffffff",
+      borderRadius: "8px",
+      boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
+    },
+    section: {
+      marginBottom: "2rem",
+      padding: "1rem",
+      backgroundColor: "#f8f9fa",
+      borderRadius: "6px"
+    },
+    input: {
+      width: "100%",
+      padding: "0.75rem",
+      marginBottom: "1rem",
+      border: "1px solid #dee2e6",
+      borderRadius: "4px",
+      fontSize: "1rem"
+    },
+    button: {
+      padding: "0.5rem 1rem",
+      margin: "0.5rem",
+      backgroundColor: "#4a4a75",
+      color: "white",
+      border: "none",
+      borderRadius: "4px",
+      cursor: "pointer",
+      display: "inline-flex",
+      alignItems: "center",
+      gap: "0.5rem"
+    },
+    projectCard: {
+      padding: "1rem",
+      margin: "0.5rem 0",
+      backgroundColor: "#fff",
+      borderRadius: "4px",
+      border: "1px solid #dee2e6",
+      display: "flex",
+      alignItems: "center",
+      gap: "1rem"
+    }
+  };
+
+
 
   return (
   <div style={formStyle}>
@@ -367,21 +415,27 @@ export default function CreatePortfolio() {
 </div>
 
   {/* Projects Section */}
-  <div style={sectionStyle}>
-  <h2 style={{ color: "black" }}>Skills</h2>
-          {projects.map((project) => (
-            <div key={project.projectId}>
-              <label style={{ color: "black" }}>
+ <div style={styles.section}>
+          <h2 className="text-xl font-semibold mb-4">Projects</h2>
+          <div className="grid gap-4">
+            {projects.map((project) => (
+              <div key={project.projectId} style={styles.projectCard}>
                 <input
                   type="checkbox"
-                  onChange={() => handleProjectSelection(project)}
                   checked={selectedProjectIds.includes(project.projectId)}
+                  onChange={() => handleProjectSelection(project)}
+                  className="w-5 h-5"
                 />
-                {project.title}
-              </label>
-            </div>
-          ))}
-         
+                <div className="flex-1">
+                  <h3 className="font-semibold">{project.title}</h3>
+                  <p className="text-sm text-gray-600">{project.description}</p>
+                </div>
+                {selectedProjectIds.includes(project.projectId) && (
+                  <CheckCircle className="text-green-500" size={20} />
+                )}
+              </div>
+            ))}
+          </div>
         </div>
 
  {/* Certifications Section */}
