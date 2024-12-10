@@ -100,7 +100,7 @@ export default function AddFacultyList() {
     formData.append("file", file);
 
     try {
-      await axios.post(`${config.url}//addfacultylist`, formData, {
+      await axios.post(`${config.url}/addfacultylist`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
