@@ -243,10 +243,6 @@ export default function CreatePortfolio() {
     cursor: "pointer",
   };
 
-  if (portfolioData) {
-    return <UpdateState />;
-  }
-
 
   return (
   <div style={formStyle}>
