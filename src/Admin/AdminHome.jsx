@@ -102,7 +102,7 @@ export default function AdminHome() {
     errorContainer: {
       textAlign: "center",
       color: "#dc3545",
-      padding: "2rem",
+      paddingTop: "120px",
     },
   };
 
