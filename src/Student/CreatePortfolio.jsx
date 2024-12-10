@@ -415,28 +415,32 @@ export default function CreatePortfolio() {
 </div>
 
   {/* Projects Section */}
- <div style={styles.section}>
-          <h2 className="text-xl font-semibold mb-4">Projects</h2>
-          <div className="grid gap-4">
-            {projects.map((project) => (
-              <div key={project.projectId} style={styles.projectCard}>
-                <input
-                  type="checkbox"
-                  checked={selectedProjectIds.includes(project.projectId)}
-                  onChange={() => handleProjectSelection(project)}
-                  className="w-5 h-5"
-                />
-                <div className="flex-1">
-                  <h3 className="font-semibold">{project.title}</h3>
-                  <p className="text-sm text-gray-600">{project.description}</p>
-                </div>
-                {selectedProjectIds.includes(project.projectId) && (
-                  <CheckCircle className="text-green-500" size={20} />
-                )}
-              </div>
-            ))}
+<div style={styles.section}>
+  {/* Only render this section if there are projects */}
+  {projects.length > 0 && (
+    <>
+      <h2 className="text-xl font-semibold mb-4">Projects</h2>
+      <div className="grid gap-4">
+        {projects.map((project) => (
+          <div key={project.projectId} style={styles.projectCard}>
+            <input
+              type="checkbox"
+              checked={selectedProjectIds.includes(project.projectId)}
+              onChange={() => handleProjectSelection(project)}
+              className="w-5 h-5"
+            />
+            <div className="flex-1">
+              <h3 className="font-semibold">{project.title}</h3>
+              <p className="text-sm text-gray-600">{project.description}</p>
+            </div>
+            {selectedProjectIds.includes(project.projectId)}
           </div>
-        </div>
+        ))}
+      </div>
+    </>
+  )}
+</div>
+
 
  {/* Certifications Section */}
 <div style={sectionStyle}>
