@@ -297,7 +297,7 @@ export default function CreatePortfolio() {
   };
 
 
-  if (!portfolioData) {
+  if (portfolioData) {
     return <UpdateState />;
   }
 
