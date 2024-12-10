@@ -191,7 +191,7 @@ export default function CreatePortfolio() {
   
       console.log("Selected Project IDs (as integers):", selectedProjectIdsAsIntegers);
   
-      const response = await axios.post("http://localhost:2025/createportfolio", {
+      const response = await axios.post(`${config.url}/createportfolio`, {
         certifications: filteredCertifications,
         education: filteredEducation,
         internships: filteredInternships,
