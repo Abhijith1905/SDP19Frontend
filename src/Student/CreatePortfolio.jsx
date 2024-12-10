@@ -296,17 +296,11 @@ export default function CreatePortfolio() {
     }
   };
 
+  const isPortfolioEmpty = 
+  !portfolioData || 
+  Object.values(portfolioData).every(section => section.length === 0);
 
- if (
-  portfolioData &&
-  (portfolioData.certifications.length > 0 ||
-    portfolioData.education.length > 0 ||
-    portfolioData.internships.length > 0 ||
-    portfolioData.portfolios.length > 0 ||
-    portfolioData.skills.length > 0 ||
-    portfolioData.testimonials.length > 0 ||
-    portfolioData.projects.length > 0)
-) {
+ if (!isPortfolioEmpty) {
   return <UpdateState />;
 }
 
