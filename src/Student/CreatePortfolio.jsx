@@ -297,6 +297,9 @@ export default function CreatePortfolio() {
   };
 
 
+  if (!portfolioData) {
+    return <UpdateState />;
+  }
 
   return (
   <div style={formStyle}>
