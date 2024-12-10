@@ -14,6 +14,12 @@ export default function CreatePortfolio() {
 
   const navigate = useNavigate();
 
+    const addItem = (setFunction, template) =>
+    setFunction((prev) => [...prev, { ...template, studentId }]);
+
+  const removeItem = (setFunction, index) =>
+    setFunction((prev) => prev.filter((_, i) => i !== index));
+
   const [certifications, setCertifications] = useState([
     {
       certificationName: "",
