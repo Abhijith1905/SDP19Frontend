@@ -297,9 +297,18 @@ export default function CreatePortfolio() {
   };
 
 
-  if (portfolioData) {
-    return <UpdateState />;
-  }
+ if (
+  portfolioData &&
+  (portfolioData.certifications.length > 0 ||
+    portfolioData.education.length > 0 ||
+    portfolioData.internships.length > 0 ||
+    portfolioData.portfolios.length > 0 ||
+    portfolioData.skills.length > 0 ||
+    portfolioData.testimonials.length > 0 ||
+    portfolioData.projects.length > 0)
+) {
+  return <UpdateState />;
+}
 
   return (
   <div style={formStyle}>
