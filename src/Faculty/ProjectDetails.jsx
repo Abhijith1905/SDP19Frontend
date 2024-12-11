@@ -1,5 +1,4 @@
 import React from 'react';
-import { FileText } from 'lucide-react';
 
 const ProjectDetails = ({ projectData, percentageEnum }) => {
   // Determine if the report card should be shown (when progress is not 0)
@@ -34,25 +33,18 @@ const ProjectDetails = ({ projectData, percentageEnum }) => {
             </dd>
           </div>
           <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt className="text-sm font-medium text-gray-500">Progress</dt>
+            <dt className="text-sm font-medium text-gray-500">Phase description</dt>
             <dd className="mt-1 sm:mt-0 sm:col-span-2">
               <div className="flex items-center">
                 <div className="flex-grow">
-                  <div className="h-2 bg-gray-200 rounded-full">
-                    <div
-                      className="h-2 bg-blue-600 rounded-full"
-                      style={{ width: `${percentageEnum[projectData.percentage] || 0}%` }}
-                    ></div>
-                  </div>
+                  {/* Just display the phase description as plain text */}
+                  <p className="text-sm text-gray-900">
+                    {projectData.phaseDescription || 'No description available'}
+                  </p>
                 </div>
-                <span className="ml-3 text-sm text-gray-900">
-                  {percentageEnum[projectData.percentage] || 0}%
-                </span>
               </div>
             </dd>
           </div>
-
-       
         </dl>
       </div>
     </div>
