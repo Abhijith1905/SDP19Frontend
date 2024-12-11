@@ -6,293 +6,158 @@ import UpdateState from "./UpdateState";
 import config from "../config";
 
 export default function CreatePortfolio() {
-  const storedStudentData = JSON.parse(localStorage.getItem("student"));
-  const studentId = storedStudentData ? storedStudentData.id : "";
+  
+  // State declarations
   const [portfolioData, setPortfolioData] = useState(null);
-  const [projects, setProjects] = useState([]); // Holds the student's projects
-  const [selectedProjectIds, setSelectedProjectIds] = useState([]); // Track selected project IDs
+  const [projects, setProjects] = useState([]);
+  const [selectedProjectIds, setSelectedProjectIds] = useState([]);
+  const [portfolios, setPortfolios] = useState([{ summary: "", studentId }]);
+  const [skills, setSkills] = useState([{ 
+    skillName: "", 
+    skillLevel: "", 
+    skillCategory: "",
+    studentId 
+  }]);
+  const [certifications, setCertifications] = useState([{
+    certificationName: "",
+    certificationIssuer: "",
+    certificationDate: "",
+    expirationDate: "",
+    verificationLink: "",
+    description: "",
+    marksScored: "",
+    honors: "",
+    studentId
+  }]);
+  const [education, setEducation] = useState([{
+    educationInstitution: "",
+    educationDegree: "",
+    fieldOfStudy: "",
+    grade: "",
+    location: "",
+    educationStartDate: "",
+    educationEndDate: "",
+    studentId
+  }]);
+  const [internships, setInternships] = useState([{
+    companyName: "",
+    role: "",
+    startDate: "",
+    endDate: "",
+    about: "",
+    technologiesUsed: "",
+    achievements: "",
+    skillsGained: "",
+    location: "",
+    studentId
+  }]);
+  const [testimonials, setTestimonials] = useState([{
+    testimonialText: "",
+    giverName: "",
+    giverRole: "",
+    giverCompany: "",
+    studentId
+  }]);
 
-  const navigate = useNavigate();
-
-    const addItem = (setFunction, template) =>
-    setFunction((prev) => [...prev, { ...template, studentId }]);
-
-  const removeItem = (setFunction, index) =>
-    setFunction((prev) => prev.filter((_, i) => i !== index));
-
-  const [certifications, setCertifications] = useState([
-    {
-      certificationName: "",
-      certificationIssuer: "",
-      certificationDate: "",
-      expirationDate: "",
-      verificationLink: "",
-      description: "",
-      marksScored: "",
-      honors: "",
+  // Styles
+  const styles = {
+    formStyle: {
+      maxWidth: "800px",
+      margin: "auto",
+      paddingTop: "50px",
+      borderRadius: "10px",
     },
-  ]);
-
-  const [education, setEducation] = useState([
-    {
-      educationInstitution: "",
-      educationDegree: "",
-      fieldOfStudy: "",
-      grade: "",
-      location: "",
-      educationStartDate: "",
-      educationEndDate: "",
+    sectionStyle: {
+      marginBottom: "20px",
     },
-  ]);
-
-  const [internships, setInternships] = useState([
-    {
-      companyName: "",
-      role: "",
-      startDate: "",
-      endDate: "",
-      about: "",
-      technologiesUsed: "",
-      achievements: "",
-      skillsGained: "",
-      location: "",
+    inputStyle: {
+      padding: "10px",
+      marginBottom: "10px",
+      borderRadius: "5px",
+      border: "1px solid #ddd",
+      width: "100%",
+      backgroundColor: "#f0f0f0",
+      color: "#000",
     },
-  ]);
-
-  const [portfolios, setPortfolios] = useState([{ summary: "" }]);
-
-  const [skills, setSkills] = useState([
-    {
-      skillName: "",
-      skillLevel: "",
-      skillCategory: "",
+    buttonStyle: {
+      padding: "8px 16px",
+      margin: "10px 5px",
+      backgroundColor: "#4a4a75",
+      color: "white",
+      border: "none",
+      borderRadius: "5px",
+      cursor: "pointer",
     },
-  ]);
-
-  const [testimonials, setTestimonials] = useState([
-    {
-      testimonialText: "",
-      giverName: "",
-      giverRole: "",
-      giverCompany: "",
-    },
-  ]);
-
-  // Fetch existing portfolio data and projects
-  useEffect(() => {
-    const fetchPortfolioData = async () => {
-      try {
-        const response = await axios.get(
-         `${config.url}/displayportfolio?studentId=${studentId}`
-        );
-        setPortfolioData(response.data);
-      } catch (error) {
-        console.error("Error fetching portfolio data:", error);
-        setPortfolioData(null);
-      }
-    };
-
-    const fetchProjects = async () => {
-      try {
-        const response = await axios.get(
-         `${config.url}/viewallprojects?studentId=${studentId}`
-        );
-        setProjects(response.data); // Save fetched projects to state
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      }
-    };
-
-    if (studentId) {
-      fetchPortfolioData();
-      fetchProjects();
+    textareaStyle: {
+      resize: "none",
+      height: "150px",
+      width: "100%",
+      fontSize: "16px",
+      padding: "10px",
     }
-  }, [studentId]);
+  };
 
-  // Update states with studentId
+  // Fetch data on component mount
   useEffect(() => {
-    setCertifications((prev) => prev.map((cert) => ({ ...cert, studentId })));
-    setEducation((prev) => prev.map((edu) => ({ ...edu, studentId })));
-    setInternships((prev) => prev.map((intern) => ({ ...intern, studentId })));
-    setPortfolios((prev) => prev.map((port) => ({ ...port, studentId })));
-    setSkills((prev) => prev.map((skill) => ({ ...skill, studentId })));
-    setTestimonials((prev) => prev.map((test) => ({ ...test, studentId })));
+    const fetchData = async () => {
+      if (!studentId) return;
+
+      try {
+        const [portfolioResponse, projectsResponse] = await Promise.all([
+          axios.get(`${config.url}/displayportfolio?studentId=${studentId}`),
+          axios.get(`${config.url}/viewallprojects?studentId=${studentId}`)
+        ]);
+
+        setPortfolioData(portfolioResponse.data);
+        setProjects(projectsResponse.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
   }, [studentId]);
 
-  // Handle project selection (store only projectId)
   const handleProjectSelection = (project) => {
-    setSelectedProjectIds((prevSelectedIds) => {
-      // Check if the projectId is already selected
-      if (prevSelectedIds.includes(project.projectId)) {
-        // If selected, remove it
-        return prevSelectedIds.filter((id) => id !== project.projectId);
-      } else {
-        // If not selected, add it
-        return [...prevSelectedIds, project.projectId];
-      }
-    });
+    setSelectedProjectIds(prev => 
+      prev.includes(project.projectId)
+        ? prev.filter(id => id !== project.projectId)
+        : [...prev, project.projectId]
+    );
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    // Helper function to remove empty entries
-    const removeEmptyFields = (array, fields) => {
-      return array.filter((item) =>
-        fields.some((field) => typeof item[field] === "string" && item[field]?.trim())
+
+    // Helper function to filter out empty entries
+    const filterNonEmpty = (array, requiredFields) => {
+      return array.filter(item => 
+        requiredFields.some(field => 
+          typeof item[field] === "string" && item[field]?.trim()
+        )
       );
     };
-  
-    const filteredCertifications = removeEmptyFields(certifications, [
-      "certificationName",
-      "certificationIssuer",
-      "certificationDate",
-      "expirationDate",
-      "verificationLink",
-      "description",
-      "marksScored",
-      "honors",
-    ]);
-  
-    const filteredEducation = removeEmptyFields(education, [
-      "educationInstitution",
-      "educationDegree",
-      "fieldOfStudy",
-      "grade",
-      "location",
-      "educationStartDate",
-      "educationEndDate",
-    ]);
-  
-    const filteredInternships = removeEmptyFields(internships, [
-      "companyName",
-      "role",
-      "startDate",
-      "endDate",
-      "about",
-      "technologiesUsed",
-      "achievements",
-      "skillsGained",
-      "location",
-    ]);
-  
-    const filteredPortfolios = removeEmptyFields(portfolios, ["summary"]);
-  
-    const filteredSkills = removeEmptyFields(skills, [
-      "skillName",
-      "skillLevel",
-      "skillCategory",
-    ]);
-  
-    const filteredTestimonials = removeEmptyFields(testimonials, [
-      "testimonialText",
-      "giverName",
-      "giverRole",
-      "giverCompany",
-    ]);
-  
+
     try {
-      // Convert selectedProjectIds to integers
-      const selectedProjectIdsAsIntegers = selectedProjectIds.map(id => parseInt(id, 10));
-  
-      console.log("Selected Project IDs (as integers):", selectedProjectIdsAsIntegers);
-  
-      const response = await axios.post(`${config.url}/createportfolio`, {
-        certifications: filteredCertifications,
-        education: filteredEducation,
-        internships: filteredInternships,
-        portfolios: filteredPortfolios,
-        skills: filteredSkills,
-        testimonials: filteredTestimonials,
-        projectIds: selectedProjectIdsAsIntegers, // Send project IDs as integers
-      });
-  
-      console.log("Response:", response.data);
+      const payload = {
+        portfolios: filterNonEmpty(portfolios, ["summary"]),
+        certifications: filterNonEmpty(certifications, ["certificationName"]),
+        education: filterNonEmpty(education, ["educationInstitution"]),
+        internships: filterNonEmpty(internships, ["companyName"]),
+        testimonials: filterNonEmpty(testimonials, ["testimonialText"]),
+        projectIds: selectedProjectIds.map(id => parseInt(id, 10)),
+      };
+
+      // Only include skills if they exist and are not empty
+      const nonEmptySkills = filterNonEmpty(skills, ["skillName"]);
+      if (nonEmptySkills.length > 0) {
+        payload.skills = nonEmptySkills;
+      }
+
+      await axios.post(`${config.url}/createportfolio`, payload);
       navigate("/viewportfolio");
     } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-  
-  const formStyle = {
-    maxWidth: "800px",
-    margin: "auto",
-    paddingTop: "50px",
-    borderRadius: "10px",
-  };
-
-  const sectionStyle = {
-    marginBottom: "20px",
-  };
-
-  const inputStyle = {
-    padding: "10px",
-    marginBottom: "10px",
-    borderRadius: "5px",
-    border: "1px solid #ddd",
-    width: "100%",
-    backgroundColor: "#f0f0f0",
-    color: "#000",
-    border: "1px solid #ccc",
-    padding: "10px",
-    borderRadius: "5px",
-    width: "100%",
-  };
-
-  const buttonStyle = {
-    padding: "8px 16px",
-    margin: "10px 5px",
-    backgroundColor: "#4a4a75",
-    color: "white",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-  };
-
-    const styles = {
-    container: {
-      maxWidth: "800px",
-      margin: "0 auto",
-      padding: "2rem",
-      backgroundColor: "#ffffff",
-      borderRadius: "8px",
-      boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
-    },
-    section: {
-      marginBottom: "2rem",
-      padding: "1rem",
-      backgroundColor: "#f8f9fa",
-      borderRadius: "6px"
-    },
-    input: {
-      width: "100%",
-      padding: "0.75rem",
-      marginBottom: "1rem",
-      border: "1px solid #dee2e6",
-      borderRadius: "4px",
-      fontSize: "1rem"
-    },
-    button: {
-      padding: "0.5rem 1rem",
-      margin: "0.5rem",
-      backgroundColor: "#4a4a75",
-      color: "white",
-      border: "none",
-      borderRadius: "4px",
-      cursor: "pointer",
-      display: "inline-flex",
-      alignItems: "center",
-      gap: "0.5rem"
-    },
-    projectCard: {
-      padding: "1rem",
-      margin: "0.5rem 0",
-      backgroundColor: "#fff",
-      borderRadius: "4px",
-      border: "1px solid #dee2e6",
-      display: "flex",
-      alignItems: "center",
-      gap: "1rem"
+      console.error("Error submitting form:", error);
     }
   };
 
@@ -300,154 +165,122 @@ export default function CreatePortfolio() {
   !portfolioData || 
   Object.values(portfolioData).every(section => section.length === 0);
 
- if (!isPortfolioEmpty) {
+if (isPortfolioEmpty) {
   return <UpdateState />;
 }
 
   return (
-  <div style={formStyle}>
-  <form className="custom-form" onSubmit={handleSubmit}>
-    {/* Summary Section */}
-    <br />
-    <br />
-    <br />
-    <h2 style={{ color: "black" }}>
-      <u>Design Your Portfolio</u>
-    </h2>
-    <br></br>
-    <div style={sectionStyle}>
-      <h2 style={{ color: "black" }}>Summary</h2>
-      {portfolios.map((portfolio, index) => (
-        <textarea
-          key={index}
-          placeholder="Portfolio Summary"
-          value={portfolio.summary || ""}
-          onChange={(e) =>
-            setPortfolios((prev) =>
-              prev.map((item, i) =>
-                i === index ? { ...item, summary: e.target.value } : item
-              )
-            )
-          }
-          style={{
-            ...inputStyle,
-            resize: "none", // Disable resizing
-            height: "150px", // Set height for a larger area
-            width: "700px", // Set width to occupy full container
-            fontSize: "16px", // Adjust font size for readability
-            padding: "10px", // Add padding for better aesthetics
-          }}
-          required
-        />
-      ))}
-    </div>
-{/* Skills Section */}
-<div style={sectionStyle}>
-  <h2 style={{ color: "black" }}>Skills</h2>
-  {skills.map((skill, index) => (
-    <div key={index}>
-      {/* Skill Name Input */}
-      <input 
-        type="text"
-        placeholder="Skill Name"
-        value={skill.skillName || ""}
-        onChange={(e) =>
-          setSkills((prev) =>
-            prev.map((item, i) =>
-              i === index ? { ...item, skillName: e.target.value } : item
-            )
-          )
-        }
-        style={inputStyle}
-      />
+    <div style={styles.formStyle}>
+      <form onSubmit={handleSubmit} className="custom-form">
+        <h2 style={{ color: "black", textAlign: "center" }}>
+          <u>Design Your Portfolio</u>
+        </h2>
 
-      {/* Skill Level Dropdown */}
-      <select
-        value={skill.skillLevel || ""}
-        onChange={(e) =>
-          setSkills((prev) =>
-            prev.map((item, i) =>
-              i === index ? { ...item, skillLevel: e.target.value } : item
-            )
-          )
-        }
-        style={inputStyle}
-      >
-        <option value="">Select Skill Level</option>
-        <option value="Starter">Starter</option>
-        <option value="Medium">Medium</option>
-        <option value="Advanced">Advanced</option>
-      </select>
-
-      {/* Skill Category Dropdown */}
-      <select
-        value={skill.skillCategory || ""}
-        onChange={(e) =>
-          setSkills((prev) =>
-            prev.map((item, i) =>
-              i === index ? { ...item, skillCategory: e.target.value } : item
-            )
-          )
-        }
-        style={inputStyle}
-      >
-        <option value="">Select Skill Category</option>
-        <option value="Programming Language">Programming Language</option>
-        <option value="Full Stack">Full Stack</option>
-        <option value="Frontend Development">Frontend Development</option>
-        <option value="Backend Development">Backend Development</option>
-      </select>
-
-      {/* Add Skill Button */}
-      <button
-        type="button"
-        onClick={() => addItem(setSkills, { skillName: "", skillLevel: "", skillCategory: "" })}
-        style={buttonStyle}
-      >
-        Add Skill
-      </button>
-
-      {/* Remove Skill Button */}
-      <button
-        type="button"
-        onClick={() => removeItem(setSkills, index)}
-        style={buttonStyle}
-        disabled={skills.length === 1}
-      >
-        Remove Skill
-      </button>
-    </div>
-  ))}
-</div>
-
-  {/* Projects Section */}
-<div style={styles.section}>
-  {/* Only render this section if there are projects */}
-  {projects.length > 0 && (
-    <>
-      <h2 className="text-xl font-semibold mb-4">Projects</h2>
-      <div className="grid gap-4">
-        {projects.map((project) => (
-          <div key={project.projectId} style={styles.projectCard}>
-            <input
-              type="checkbox"
-              checked={selectedProjectIds.includes(project.projectId)}
-              onChange={() => handleProjectSelection(project)}
-              className="w-5 h-5"
+        {/* Summary Section */}
+        <div style={styles.sectionStyle}>
+          <h2 style={{ color: "black" }}>Summary</h2>
+          {portfolios.map((portfolio, index) => (
+            <textarea
+              key={index}
+              placeholder="Portfolio Summary"
+              value={portfolio.summary}
+              onChange={(e) => setPortfolios(prev =>
+                prev.map((item, i) => i === index 
+                  ? { ...item, summary: e.target.value }
+                  : item
+                )
+              )}
+              style={{ ...styles.inputStyle, ...styles.textareaStyle }}
+              required
             />
-            <div className="flex-1">
-              <h3 className="font-semibold">{project.title}</h3>
-              <p className="text-sm text-gray-600">{project.description}</p>
+          ))}
+        </div>
+
+        {/* Skills Section */}
+        <div style={styles.sectionStyle}>
+          <h2 style={{ color: "black" }}>Skills (Optional)</h2>
+          {skills.map((skill, index) => (
+            <div key={index}>
+              <input
+                type="text"
+                placeholder="Skill Name"
+                value={skill.skillName}
+                onChange={(e) => setSkills(prev =>
+                  prev.map((item, i) => i === index
+                    ? { ...item, skillName: e.target.value }
+                    : item
+                  )
+                )}
+                style={styles.inputStyle}
+              />
+              <select
+                value={skill.skillLevel}
+                onChange={(e) => setSkills(prev =>
+                  prev.map((item, i) => i === index
+                    ? { ...item, skillLevel: e.target.value }
+                    : item
+                  )
+                )}
+                style={styles.inputStyle}
+              >
+                <option value="">Select Skill Level</option>
+                <option value="Starter">Starter</option>
+                <option value="Medium">Medium</option>
+                <option value="Advanced">Advanced</option>
+              </select>
+              <select
+                value={skill.skillCategory}
+                onChange={(e) => setSkills(prev =>
+                  prev.map((item, i) => i === index
+                    ? { ...item, skillCategory: e.target.value }
+                    : item
+                  )
+                )}
+                style={styles.inputStyle}
+              >
+                <option value="">Select Skill Category</option>
+                <option value="Programming Language">Programming Language</option>
+                <option value="Full Stack">Full Stack</option>
+                <option value="Frontend Development">Frontend Development</option>
+                <option value="Backend Development">Backend Development</option>
+              </select>
+              <button
+                type="button"
+                onClick={() => addItem(setSkills, { skillName: "", skillLevel: "", skillCategory: "", studentId })}
+                style={styles.buttonStyle}
+              >
+                Add Skill
+              </button>
+              <button
+                type="button"
+                onClick={() => removeItem(setSkills, index)}
+                style={styles.buttonStyle}
+                disabled={skills.length === 1}
+              >
+                Remove Skill
+              </button>
             </div>
-            {selectedProjectIds.includes(project.projectId)}
-          </div>
-        ))}
-      </div>
-    </>
-  )}
-</div>
+          ))}
+        </div>
 
+        {/* Projects Section */}
+        <div style={styles.sectionStyle}>
+          <h2 style={{ color: "black" }}>Projects</h2>
+          {projects.map((project) => (
+            <div key={project.projectId}>
+              <label style={{ color: "black" }}>
+                <input
+                  type="checkbox"
+                  onChange={() => handleProjectSelection(project)}
+                  checked={selectedProjectIds.includes(project.projectId)}
+                />
+                {project.title}
+              </label>
+            </div>
+          ))}
+        </div>
 
+          
  {/* Certifications Section */}
 <div style={sectionStyle}>
   <h2 style={{ color: "black" }}>Certifications</h2>
@@ -1011,13 +844,20 @@ export default function CreatePortfolio() {
     </div>
   ))}
 </div>
-
-     
-
-       <center> <button type="submit" style={{ ...buttonStyle, marginTop: "20px" }}>
-          Create
-        </button></center>
+        {/* Submit Button */}
+        <div style={{ textAlign: "center" }}>
+          <button type="submit" style={{ ...styles.buttonStyle, marginTop: "20px" }}>
+            Create Portfolio
+          </button>
+        </div>
       </form>
     </div>
   );
 }
+
+
+
+
+
+
+     
