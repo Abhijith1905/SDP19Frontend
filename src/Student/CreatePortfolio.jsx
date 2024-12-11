@@ -292,7 +292,10 @@ const handleSubmit = async (e) => {
     cursor: "pointer",
   };
 
-  if (portfolioData) {
+ const isPortfolioEmpty = !portfolioData || 
+    Object.values(portfolioData).every(section => section.length === 0);
+
+  if (!isPortfolioEmpty) {
     return <UpdateState />;
   }
 
