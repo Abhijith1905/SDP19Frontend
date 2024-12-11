@@ -1,140 +1,174 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import config from "../config";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-import ProjectMedia from './ProjectMedia';
-import MediaModal from './MediaModal';
-import SProjectDetails from './ProjectDetails';
-
-const Button = ({ label, onClick }) => {
-  // Only render button if it's not "Generate Report" or "Grade"
-  if (label === "Generate Report" || label === "Grade") {
-    return null; // Do not render the button
-  }
-
-  return (
-    <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={onClick}>
-      {label}
-    </button>
-  );
-};
-
-function ViewProject() {
+const ViewProject = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [projectData, setProjectData] = useState(null);
   const [projectImage, setProjectImage] = useState(null);
   const [projectFile, setProjectFile] = useState(null);
   const [error, setError] = useState(null);
   const [mediaUrls, setMediaUrls] = useState({});
   const [modalMedia, setModalMedia] = useState(null);
-  const [modalType, setModalType] = useState('');
+  const [modalType, setModalType] = useState("");
   const [zipUrl, setZipUrl] = useState(null);
 
+  const navigate = useNavigate();
   useEffect(() => {
-    document.body.style.display = 'flex';
-    document.body.style.flexDirection = 'column';
-    document.body.style.justifyContent = 'flex-start';
-    document.body.style.minHeight = '100vh';
-
     const fetchProjectData = async () => {
       try {
         const response = await axios.get(`${config.url}/displayproject?projectId=${id}`);
         setProjectData(response.data);
       } catch (error) {
         setError(error.message);
-        toast.error(`Error fetching project: ${error.message}`, {
-          position: "top-center",
-          autoClose: 5000,
-        });
       }
     };
     fetchProjectData();
-
-    return () => {
-      document.body.style = '';
-    };
   }, [id]);
 
-  useEffect(() => {
-    if (projectData) {
-      axios.get(`${config.url}/displayprojectimage?projectId=${id}`, { responseType: 'blob' })
-        .then((response) => setProjectImage(URL.createObjectURL(response.data)))
-        .catch((error) => console.error('Error fetching project image:', error));
-
-      axios.get(`${config.url}/displayprojectfile?projectId=${id}`, { responseType: 'blob' })
-        .then((response) => setProjectFile(URL.createObjectURL(response.data)))
-        .catch((error) => console.error('Error fetching project file:', error));
-
-      if (projectData.mediaList) {
-        const fetchMediaUrls = async () => {
-          const mediaPromises = projectData.mediaList.map(async (mediaItem) => {
-            try {
-              const response = await axios.get(
-                `${config.url}/displaymedia?id=${mediaItem.mediaId}`,
-                { responseType: 'blob' }
-              );
-              const mediaUrl = URL.createObjectURL(response.data);
-              return { mediaId: mediaItem.mediaId, mediaUrl, mediaType: mediaItem.mediaType };
-            } catch (error) {
-              console.error('Error fetching media:', error);
-              return { mediaId: mediaItem.mediaId, mediaUrl: null };
-            }
-          });
-
-          const mediaResults = await Promise.all(mediaPromises);
-          const mediaUrls = mediaResults.reduce((acc, { mediaId, mediaUrl, mediaType }) => {
-            acc[mediaId] = { mediaUrl, mediaType };
-            return acc;
-          }, {});
-
-          setMediaUrls(mediaUrls);
-
-          const zipFile = projectData.mediaList.find(
-            (mediaItem) => mediaItem.mediaType === 'zip'
-          );
-          if (zipFile) {
-            const zipResponse = await axios.get(
-              `${config.url}/displaymedia?id=${zipFile.mediaId}`,
-              { responseType: 'blob' }
-            );
-            setZipUrl(URL.createObjectURL(zipResponse.data));
-          }
-        };
-        fetchMediaUrls();
-      }
-    }
-  }, [projectData, id]);
+  const handleInputChange = (e, field) => {
+    setProjectData((prevData) => ({
+      ...prevData,
+      [field]: e.target.value,
+    }));
+  };
 
   const handleUpdateProject = async () => {
     try {
-      await axios.put(`${config.url}/updateproject`, projectData);
-      toast.success("Project updated successfully!", { position: "top-center", autoClose: 3000 });
+      await axios.put(`${config.url}/updateproject`, projectData); // Assuming a PUT endpoint for updating
+      alert('Project updated successfully!');
     } catch (error) {
-      toast.error(`Error updating project: ${error.message}`, {
-        position: "top-center",
-        autoClose: 5000,
-      });
+      console.error('Error updating project:', error.message);
     }
+  };
+
+  const handleCheckStatusChange = () => {
+    setProjectData({
+      ...projectData,
+      checkStatus: !projectData.checkStatus, // Toggle the checkStatus value
+    });
   };
 
   const handleSubmitForReview = async () => {
     try {
-      await axios.put(`${config.url}/updateproject`, projectData);
-      toast.success("Project submitted for review!", { position: "top-center", autoClose: 3000 });
+      await axios.put(`${config.url}/updateproject`, projectData); // Assuming a PUT endpoint for updating
+      alert('Project submitted for review!');
     } catch (error) {
-      toast.error(`Error submitting project: ${error.message}`, {
-        position: "top-center",
-        autoClose: 5000,
-      });
+      console.error('Error updating project:', error.message);
     }
   };
 
-  const handleReportGeneration = () => {
-    window.open(`${config.url}/viewreport?projectId=${id}`, '_blank');
+  useEffect(() => {
+    if (projectData) {
+      axios.get(`${config.url}/displayprojectimage?projectId=${id}`, { responseType: "blob" })
+        .then((response) => {
+          setProjectImage(URL.createObjectURL(response.data));
+        })
+        .catch((error) => console.error("Error fetching project image:", error));
+    }
+  }, [projectData, id]);
+
+  useEffect(() => {
+    if (projectData) {
+      axios.get(`${config.url}/displayprojectfile?projectId=${id}`, { responseType: "blob" })
+        .then((response) => {
+          setProjectFile(URL.createObjectURL(response.data));
+        })
+        .catch((error) => console.error("Error fetching project file:", error));
+    }
+  }, [projectData, id]);
+
+  useEffect(() => {
+    if (projectData && projectData.mediaList) {
+      const fetchMediaUrls = async () => {
+        const mediaPromises = projectData.mediaList.map(async (mediaItem) => {
+          try {
+            const response = await axios.get(
+              `${config.url}/displaymedia?id=${mediaItem.mediaId}`,
+              { responseType: "blob" }
+            );
+            const mediaUrl = URL.createObjectURL(response.data);
+            return { mediaId: mediaItem.mediaId, mediaUrl, mediaType: mediaItem.mediaType };
+          } catch (error) {
+            console.error("Error fetching media:", error);
+            return { mediaId: mediaItem.mediaId, mediaUrl: null };
+          }
+        });
+
+        const mediaResults = await Promise.all(mediaPromises);
+        const mediaUrls = mediaResults.reduce((acc, { mediaId, mediaUrl, mediaType }) => {
+          acc[mediaId] = { mediaUrl, mediaType };
+          return acc;
+        }, {});
+
+        setMediaUrls(mediaUrls);
+
+        // Check if ZIP exists and fetch its URL
+        const zipFile = projectData.mediaList.find(
+          (mediaItem) => mediaItem.mediaType === "zip"
+        );
+        if (zipFile) {
+          const zipResponse = await axios.get(
+            `${config.url}/displaymedia?id=${zipFile.mediaId}`,
+            { responseType: "blob" }
+          );
+          setZipUrl(URL.createObjectURL(zipResponse.data));
+        }
+      };
+      fetchMediaUrls();
+    }
+  }, [projectData]);
+
+  const renderMedia = (mediaId, mediaType) => {
+    const mediaUrl = mediaUrls[mediaId]?.mediaUrl;
+    if (!mediaUrl) return <p>Loading media...</p>;
+
+    return (
+      <div
+        style={{
+          margin: "15px",
+          cursor: "pointer",
+          display: "inline-block",
+          width: "250px",
+          backgroundColor: "#f4f4f4",
+          borderRadius: "15px",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+          padding: "10px",
+          textAlign: "center",
+          transition: "transform 0.3s ease-in-out",
+        }}
+        onClick={() => openModal(mediaUrl, mediaType)}
+        onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+        onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+      >
+        {mediaType.includes("image") ? (
+          <img
+            src={mediaUrl}
+            alt="Project Media"
+            style={{
+              width: "100%",
+              height: "150px",
+              borderRadius: "8px",
+            }}
+          />
+        ) : mediaType === "pdf" || mediaType.includes("text") ? (
+          <iframe
+            src={mediaUrl}
+            width="90%"  // Adjust this value to make the iframe larger or smaller
+            height="80%" // Adjust this value to make the iframe taller or shorter
+            title="PDF or Text Media"
+            style={{
+              borderRadius: "8px",
+              boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
+            }}
+          />
+        ) : null}
+        <p style={{ color: "#4a4a75", marginTop: "10px" }}>
+          Click to view {mediaType === "pdf" ? "PDF" : mediaType.includes("text") ? "text" : "image"}
+        </p>
+      </div>
+    );
   };
 
   const openModal = (mediaUrl, type) => {
@@ -142,32 +176,329 @@ function ViewProject() {
     setModalType(type);
   };
 
-  if (error) return <div className="text-red-600 p-4">Error: {error}</div>;
-  if (!projectData) return <div className="text-gray-600 p-4">Loading...</div>;
+  const closeModal = () => {
+    setModalMedia(null);
+    setModalType("");
+  };
+
+  if (error) return <p>Error: {error}</p>;
+  if (!projectData) return <p>Loading...</p>;
 
   return (
-    <div style={{ paddingTop: "100px" }} className="max-w-7xl mx-auto px-4 py-8 flex flex-col">
-      <SProjectDetails
-        projectData={projectData}
-        handleInputChange={(e, field) =>
-          setProjectData((prev) => ({ ...prev, [field]: e.target.value })) }
-        handleCheckStatusChange={() =>
-          setProjectData((prev) => ({ ...prev, checkStatus: !prev.checkStatus })) }
-        handleUpdateProject={handleUpdateProject}
-        handleSubmitForReview={handleSubmitForReview}
-        handleReportGeneration={handleReportGeneration}
-        navigateToUploadMedia={() => navigate(`/uploadmedia/${id}`)}
-        projectImage={projectImage}
-        projectFile={projectFile}
-        zipUrl={zipUrl}
-        openModal={openModal}
-      />
+    <div className="content">
+      {/* Project Details Table - Vertical Layout */}
+      <h2 style={{ color: "#4a4a75", textAlign: "center" }}>Project Details</h2>
+      <table
+  style={{
+    width: "100%",
+    borderCollapse: "collapse",
+    marginBottom: "20px",
+    backgroundColor: "#e6e6e6",
+    color: "#4a4a75",
+  }}
+>
+  <tbody>
+    <tr>
+      <td style={{ border: "1px solid #ddd", padding: "12px", fontWeight: "bold" }}>Title</td>
+      <td style={{ border: "1px solid #ddd", padding: "12px" }}>
+        <input
+          type="text"
+          value={projectData.title || ""}
+          onChange={(e) => handleInputChange(e, "title")}
+          style={{ width: "100%", padding: "8px" }}
+        />
+      </td>
+    </tr>
+    <tr>
+      <td style={{ border: "1px solid #ddd", padding: "12px", fontWeight: "bold" }}>Idea of Project</td>
+      <td style={{ border: "1px solid #ddd", padding: "12px" }}>
+        <textarea
+          value={projectData.description || ""}
+          onChange={(e) => handleInputChange(e, "description")}
+          style={{ width: "100%", padding: "8px" }}
+        />
+      </td>
+    </tr>
+    <tr>
+      <td style={{ border: "1px solid #ddd", padding: "12px", fontWeight: "bold" }}>Phase</td>
+      <td style={{ border: "1px solid #ddd", padding: "12px" }}>
+        <select
+          value={projectData.phase || ""}
+          onChange={(e) => handleInputChange(e, "phase")}
+          style={{ width: "100%", padding: "8px" }}
+        >
+          <option value="NOT_STARTED">Not Started</option>
+          <option value="ACTIVE">Active</option>
+          <option value="COMPLETED">Completed</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td style={{ border: "1px solid #ddd", padding: "12px", fontWeight: "bold" }}>Project Icon</td>
+      <td style={{ border: "1px solid #ddd", padding: "12px" }}>
+        {projectImage && (
+          <center>
+            <button
+              onClick={() => openModal(projectImage, "image")}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "#d2b48c",
+                color: "black",
+                border: "none",
+                borderRadius: "8px",
+              }}
+            >
+              View
+            </button>
+          </center>
+        )}
+      </td>
+    </tr>
+    <tr>
+      <td style={{ border: "1px solid #ddd", padding: "12px", fontWeight: "bold" }}>Description</td>
+      <td style={{ border: "1px solid #ddd", padding: "12px" }}>
+        {projectFile && (
+          <center>
+            <button
+              onClick={() => openModal(projectFile, "text")}
+              style={{
+                padding: "10px 20px",
+                backgroundColor: "#d2b48c",
+                color: "black",
+                border: "none",
+                borderRadius: "8px",
+              }}
+            >
+              View
+            </button>
+          </center>
+        )}
+      </td>
+    </tr>
 
-      <Button label="Generate Report" onClick={handleReportGeneration} />
-      <Button label="Track" onClick={() => navigate(`/trackproject/${id}`)} />
-      <Button label="Grade" onClick={() => console.log("Grading project")} />
+    <tr>
+      <td style={{ border: "1px solid #ddd", padding: "12px", fontWeight: "bold" }}>
+        Download ZIP
+      </td>
+      <td style={{ border: "1px solid #ddd", padding: "12px", textAlign: "center" }}>
+        <center>
+          <button
+            onClick={() => window.location.href = zipUrl}
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "#d2b48c",
+              color: "black",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+            }}
+          >
+            Download
+          </button>
+        </center>
+      </td>
+    </tr>
+
+    <tr>
+      <td style={{ border: "1px solid #ddd", padding: "12px", fontWeight: "bold" }}>
+        Submit for Review
+      </td>
+      <td style={{ border: "1px solid #ddd", padding: "12px" }}>
+        <label>
+          <input
+            type="checkbox"
+            checked={projectData.checkStatus}
+            onChange={handleCheckStatusChange}
+            style={{ marginRight: "10px" }}
+          />
+          Check to submit for review
+        </label>
+      </td>
+    </tr>
+
+    {/* Buttons side by side */}
+    <tr>
+      <td colSpan="2" style={{ padding: "12px", textAlign: "center" }}>
+        <div style={{ display: "flex", justifyContent: "center", gap: "20px" }}>
+          <button
+            onClick={handleUpdateProject}
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "#d2b48c",
+              color: "black",
+              border: "none",
+              borderRadius: "8px",
+            }}
+          >
+            Save Changes
+          </button>
+          <button
+            onClick={handleSubmitForReview}
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "#d2b48c",
+              color: "black",
+              border: "none",
+              borderRadius: "8px",
+            }}
+          >
+            Submit Review
+          </button>
+          <button
+        onClick={() => navigate(`/uploadmedia/${id}`)}
+        style={{
+          padding: "10px 20px",
+          backgroundColor: "#d2b48c",
+          color: "black",
+          border: "none",
+          borderRadius: "8px",
+          cursor: "pointer",
+        }}
+      >
+        Upload Media
+      </button>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+{/* Media Section for Images */}
+<div style={{  color:"#4a4a75" ,marginBottom: "20px", textAlign: "center" }}>
+  <h3>Project Images</h3>
+  <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+    {projectData.mediaList &&
+      projectData.mediaList
+        .filter((item) => item.mediaType.includes("image"))
+        .map((mediaItem) => {
+          const { mediaId, mediaType } = mediaItem;
+          return (
+            <div key={mediaId} style={{ margin: "10px" }}>
+              {renderMedia(mediaId, mediaType)}
+            </div>
+          );
+        })}
+  </div>
+</div>
+
+{/* Media Section for Documents */}
+<div style={{ marginBottom: "20px", textAlign: "center", color:"#4a4a75"}}>
+  <h3>Project Documents</h3>
+  <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+    {projectData.mediaList &&
+      projectData.mediaList
+        .filter((item) => item.mediaType.includes("pdf"))
+        .map((mediaItem) => {
+          const { mediaId, mediaType } = mediaItem;
+          return (
+            <div key={mediaId} style={{ margin: "10px" }}>
+              {renderMedia(mediaId, mediaType)}
+            </div>
+          );
+        })}
+  </div>
+</div>
+
+{/* Media Section for Text Files */}
+<div style={{ marginBottom: "20px", textAlign: "center" , color:"#4a4a75"}}>
+  <h3>Project Text Files</h3>
+  <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center" }}>
+    {projectData.mediaList &&
+      projectData.mediaList
+        .filter((item) => item.mediaType.includes("text"))
+        .map((mediaItem) => {
+          const { mediaId, mediaType } = mediaItem;
+          return (
+            <div key={mediaId} style={{ margin: "10px" }}>
+              {renderMedia(mediaId, mediaType)}
+            </div>
+          );
+        })}
+  </div>
+</div>
+
+{/* Modal for Viewing Media */}
+{modalMedia && (
+  <div
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      backgroundColor: "rgba(0, 0, 0, 0.7)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 1000,
+    }}
+    onClick={closeModal}
+  >
+    <div
+      style={{
+        backgroundColor: "#fff",
+        padding: "20px",
+        borderRadius: "10px",
+        maxWidth: "80%",
+        maxHeight: "80%",
+        overflow: "auto",
+      }}
+      onClick={(e) => e.stopPropagation()} // Prevent closing on click inside modal
+    >
+      {modalType === "image" ? (
+        <img
+          src={modalMedia}
+          alt="Media"
+          style={{
+            width: "100%",
+            height: "auto",
+            borderRadius: "8px",
+          }}
+        />
+      ) : modalType === "text" ? (
+        <iframe
+          src={modalMedia}
+          width="100%"
+          height="500px"
+          title="Text File"
+          style={{
+            borderRadius: "8px",
+            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
+          }}
+        />
+      ) : modalType === "pdf" ? (
+        <iframe
+          src={modalMedia}
+          width="100%" // Make it responsive within the modal container
+          height="600px" // Adjust height for readability
+          title="PDF"
+          style={{
+            borderRadius: "8px",
+            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
+          }}
+        />
+      ) : null}
+      <button
+        onClick={closeModal}
+        style={{
+          marginTop: "10px",
+          padding: "10px 20px",
+          backgroundColor: "#f44336",
+          color: "white",
+          border: "none",
+          borderRadius: "8px",
+          cursor: "pointer",
+        }}
+      >
+        Close
+      </button>
     </div>
+  </div>
+)}
+</div>
   );
-}
+};
 
 export default ViewProject;
