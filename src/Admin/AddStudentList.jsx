@@ -122,7 +122,8 @@ export default function AddStudentList() {
         flexDirection: "column", // Stacks table and form vertically
       }}
     >
-    
+      <h4>Format -fullName, gender, department, program, semester, year, dateOfBirth, password, email, contact (As a CSV File) </h4>
+    <br></br>
 
       {/* Upload Form Container */}
       <div style={styles.container}>
