@@ -34,7 +34,6 @@ const ViewPortfolioFeedback = () => {
         }
       } catch (error) {
         console.error("Error fetching portfolio feedback data:", error);
-        setMessage("Error retrieving portfolio feedback data. Please try again.");
       }
     };
 
