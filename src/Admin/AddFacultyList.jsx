@@ -115,7 +115,8 @@ export default function AddFacultyList() {
   return (
     <div style={{ paddingTop: "120px", display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", flexDirection: "column" }}>
    
-
+    <h4>Format - username, password, email  (As a CSV File) </h4>
+      <br></br>
       {/* Upload Form Container */}
       <div style={styles.container}>
         {message && <p style={styles.message}>{message}</p>}
