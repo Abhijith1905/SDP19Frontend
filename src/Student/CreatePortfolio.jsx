@@ -6,7 +6,10 @@ import UpdateState from "./UpdateState";
 import config from "../config";
 
 export default function CreatePortfolio() {
-  
+
+  const studentData = JSON.parse(localStorage.getItem("student"));
+        const studentId = studentData ? studentData.id : null;
+
   // State declarations
   const [portfolioData, setPortfolioData] = useState(null);
   const [projects, setProjects] = useState([]);
