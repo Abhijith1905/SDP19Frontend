@@ -168,7 +168,7 @@ export default function CreatePortfolio() {
   !portfolioData || 
   Object.values(portfolioData).every(section => section.length === 0);
 
-if (isPortfolioEmpty) {
+if (!isPortfolioEmpty) {
   return <UpdateState />;
 }
 
