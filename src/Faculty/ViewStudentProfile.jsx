@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { User, Save, AlertCircle } from 'lucide-react';
+import config from '../config';
 
 export default function ViewStudentProfile() {
   const [studentData, setStudentData] = useState({});
